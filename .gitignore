@@ -45,5 +45,6 @@ Thumbs.db
 backend/uploads/
 backend/chroma_data/
 
-#cursor
-*.cursor
+# Cursor IDE
+.cursor/
+.cursor
