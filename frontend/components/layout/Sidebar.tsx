@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { PanelLeftClose, PanelLeft, Database, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useThreadStore } from "@/lib/stores/thread-store";
 import { useUIStore } from "@/lib/stores/ui-store";
 import { ThreadList } from "@/components/threads/ThreadList";
 import { NewChatButton } from "@/components/threads/NewChatButton";
+import { DocumentSection } from "@/components/documents/DocumentSection";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
@@ -55,15 +55,29 @@ export function Sidebar() {
         <Separator />
 
         {/* Thread list */}
-        <div className="flex-1 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           <div className="px-3 py-2">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
               Chats
             </p>
           </div>
-          <ScrollArea className="flex-1 px-3">
+          <div className="flex-1 overflow-y-auto px-3">
             <ThreadList />
-          </ScrollArea>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Documents section */}
+        <div className="overflow-hidden flex flex-col max-h-[35%] min-h-0">
+          <div className="px-3 py-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
+              Documents
+            </p>
+          </div>
+          <div className="flex-1 overflow-y-auto px-3 pb-2">
+            <DocumentSection />
+          </div>
         </div>
 
         <Separator />

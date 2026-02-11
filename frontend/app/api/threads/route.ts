@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+import { BACKEND_URL } from "@/lib/config";
 
 export async function GET() {
   const response = await fetch(`${BACKEND_URL}/threads`);

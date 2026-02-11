@@ -11,12 +11,20 @@ venv/
 env/
 
 # Environment
+# Root (optional / legacy)
 .env
 .env.local
+
+# Backend env (FastAPI)
+backend/.env
+
+# Frontend env (Next.js)
+frontend/.env.local
 
 # Databases
 *.db
 thread_store.json
+document_store.json
 
 # Node
 node_modules/
@@ -36,3 +44,6 @@ Thumbs.db
 # Uploads
 backend/uploads/
 backend/chroma_data/
+
+#cursor
+*.cursor

@@ -42,8 +42,8 @@ export default function ChatPage() {
     }
   }
 
-  async function handleSend(question: string) {
-    await sendMessage(threadId, question);
+  async function handleSend(question: string, mode: "sql" | "rag" | "hybrid") {
+    await sendMessage(threadId, question, mode);
     // Auto-title from first message
     if (currentThread?.title === "New Chat") {
       const title =
