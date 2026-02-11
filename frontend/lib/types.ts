@@ -6,6 +6,14 @@ export interface Thread {
   updated_at: string;
 }
 
+export interface Source {
+  documentId: string;
+  documentName: string;
+  page?: number;
+  chunkIndex: number;
+  snippet: string;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant";
@@ -13,6 +21,7 @@ export interface Message {
   sqlQuery?: string;
   sqlResult?: string;
   thinkingSteps?: string[];
+  sources?: string; // Raw retrieved context from RAG
 }
 
 export interface ThreadDetail extends Thread {
@@ -30,4 +39,15 @@ export interface ChatRequest {
   thread_id: string;
   question: string;
   mode?: string;
+}
+
+export interface Document {
+  id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  status: "processing" | "ready" | "error";
+  chunk_count: number;
+  error_message?: string;
+  created_at: string;
 }

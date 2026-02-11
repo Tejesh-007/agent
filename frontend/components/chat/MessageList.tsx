@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { UserMessage } from "./UserMessage";
 import { AgentMessage } from "./AgentMessage";
 import { StreamingIndicator } from "./StreamingIndicator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Message } from "@/lib/types";
 
 interface MessageListProps {
@@ -28,7 +27,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
   }
 
   return (
-    <ScrollArea className="flex-1 p-6">
+    <div className="flex-1 overflow-y-auto p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         {messages.map((message) =>
           message.role === "user" ? (
@@ -40,6 +39,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
               sqlQuery={message.sqlQuery}
               sqlResult={message.sqlResult}
               thinkingSteps={message.thinkingSteps}
+              sources={message.sources}
               isStreaming={
                 isStreaming && message === messages[messages.length - 1]
               }
@@ -52,6 +52,6 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
           !messages[messages.length - 1]?.sqlQuery && <StreamingIndicator />}
         <div ref={bottomRef} />
       </div>
-    </ScrollArea>
+    </div>
   );
 }

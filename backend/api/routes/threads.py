@@ -8,6 +8,7 @@ from models.schemas import (
     MessageResponse,
 )
 from api.dependencies import get_agent, get_thread_store
+from core.agent import _extract_text
 
 router = APIRouter(prefix="/threads", tags=["threads"])
 
@@ -50,13 +51,7 @@ async def get_thread(
                 else:
                     continue  # Skip ToolMessages
 
-                content = ""
-                if hasattr(msg, "content"):
-                    content = (
-                        msg.content
-                        if isinstance(msg.content, str)
-                        else str(msg.content)
-                    )
+                content = _extract_text(msg)
 
                 # Skip AI messages that are only tool calls with no text
                 if (

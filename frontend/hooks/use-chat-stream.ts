@@ -8,7 +8,7 @@ export function useChatStream() {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const sendMessage = useCallback(
-    async (threadId: string, question: string) => {
+    async (threadId: string, question: string, mode: string = "sql") => {
       setIsStreaming(true);
 
       // Add user message immediately
@@ -33,7 +33,7 @@ export function useChatStream() {
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ thread_id: threadId, question }),
+          body: JSON.stringify({ thread_id: threadId, question, mode }),
         });
 
         if (!response.ok) {
@@ -86,6 +86,11 @@ export function useChatStream() {
                       data.type === "sql_result"
                     ) {
                       return { ...msg, sqlResult: data.content };
+                    } else if (
+                      currentEvent === "step" &&
+                      data.type === "source"
+                    ) {
+                      return { ...msg, sources: data.content };
                     } else if (currentEvent === "answer") {
                       return { ...msg, content: data.content };
                     }

@@ -1,28 +1,55 @@
 "use client";
 
 import { useState, useRef, useCallback, KeyboardEvent } from "react";
-import { Send } from "lucide-react";
+import { Send, Database, FileText, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type Mode = "sql" | "rag" | "hybrid";
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, mode: Mode) => void;
   isStreaming: boolean;
 }
 
+const MODE_CONFIG: Record<Mode, { label: string; icon: React.ReactNode; description: string }> = {
+  sql: {
+    label: "SQL",
+    icon: <Database className="w-3.5 h-3.5" />,
+    description: "Query the database",
+  },
+  rag: {
+    label: "RAG",
+    icon: <FileText className="w-3.5 h-3.5" />,
+    description: "Search documents",
+  },
+  hybrid: {
+    label: "Hybrid",
+    icon: <Layers className="w-3.5 h-3.5" />,
+    description: "Database + Documents",
+  },
+};
+
 export function ChatInput({ onSend, isStreaming }: ChatInputProps) {
   const [value, setValue] = useState("");
+  const [mode, setMode] = useState<Mode>("sql");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed || isStreaming) return;
-    onSend(trimmed);
+    onSend(trimmed, mode);
     setValue("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-  }, [value, isStreaming, onSend]);
+  }, [value, isStreaming, onSend, mode]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -39,20 +66,65 @@ export function ChatInput({ onSend, isStreaming }: ChatInputProps) {
     }
   };
 
+  const currentMode = MODE_CONFIG[mode];
+
   return (
     <div className="border-t p-4">
       <div className="max-w-3xl mx-auto flex gap-2 items-end">
+        {/* Mode selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-11 gap-1.5 flex-shrink-0 px-3"
+              disabled={isStreaming}
+            >
+              {currentMode.icon}
+              <span className="text-xs">{currentMode.label}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {(Object.entries(MODE_CONFIG) as [Mode, typeof currentMode][]).map(
+              ([key, config]) => (
+                <DropdownMenuItem
+                  key={key}
+                  onClick={() => setMode(key)}
+                  className="gap-2"
+                >
+                  {config.icon}
+                  <div>
+                    <p className="text-sm font-medium">{config.label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {config.description}
+                    </p>
+                  </div>
+                </DropdownMenuItem>
+              )
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Text input */}
         <Textarea
           ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
-          placeholder="Ask about your database..."
+          placeholder={
+            mode === "sql"
+              ? "Ask about your database..."
+              : mode === "rag"
+                ? "Ask about your documents..."
+                : "Ask about your database or documents..."
+          }
           className="min-h-[44px] max-h-[200px] resize-none"
           rows={1}
           disabled={isStreaming}
         />
+
+        {/* Send button */}
         <Button
           onClick={handleSend}
           disabled={!value.trim() || isStreaming}
@@ -64,6 +136,8 @@ export function ChatInput({ onSend, isStreaming }: ChatInputProps) {
       </div>
       <p className="text-xs text-muted-foreground text-center mt-2">
         Press Enter to send, Shift+Enter for new line
+        <span className="mx-1.5">|</span>
+        Mode: {currentMode.label}
       </p>
     </div>
   );

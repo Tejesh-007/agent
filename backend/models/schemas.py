@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from typing import Literal
 
 
 class ChatRequest(BaseModel):
     thread_id: str
     question: str
-    mode: str = "sql"
+    mode: Literal["sql", "rag", "hybrid"] = "sql"
 
 
 class ThreadCreate(BaseModel):
@@ -44,3 +45,16 @@ class DatabaseSchemaResponse(BaseModel):
 class TablePreviewResponse(BaseModel):
     table_name: str
     result: str
+
+
+# --- Document schemas ---
+
+class DocumentResponse(BaseModel):
+    id: str
+    filename: str
+    file_type: str
+    file_size: int
+    status: str
+    chunk_count: int
+    error_message: str | None = None
+    created_at: str
