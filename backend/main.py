@@ -1,9 +1,7 @@
+import logging
 from contextlib import asynccontextmanager
-
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from core.app import build_app
 from core.settings import Settings
 from services.thread_store import ThreadStore
@@ -11,6 +9,12 @@ from services.document_store import DocumentStore
 from api.routes import chat, threads, database, documents
 from pathlib import Path
 from dotenv import load_dotenv
+import uvicorn
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(name)s %(levelname)s %(message)s",
+)
 
 
 @asynccontextmanager

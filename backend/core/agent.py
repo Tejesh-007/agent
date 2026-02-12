@@ -1,10 +1,14 @@
 import json
+import logging
 
 from langchain.agents import create_agent
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain.tools import tool
 
 from core.prompts import build_system_prompt
+from core.token_tracker import TokenTracker
+
+logger = logging.getLogger("token_tracker")
 
 
 # ---------------------------------------------------------------------------
@@ -181,7 +185,11 @@ def stream_agent_events(agent, question: str, thread_id: str):
         answer - final agent response
         done   - stream complete signal
     """
-    config = {"configurable": {"thread_id": thread_id}}
+    tracker = TokenTracker()
+    config = {
+        "configurable": {"thread_id": thread_id},
+        "callbacks": [tracker],
+    }
 
     # Get the number of messages already in the checkpoint so we skip them.
     # Without this, stream_mode="values" re-emits the full history on the
@@ -205,6 +213,7 @@ def stream_agent_events(agent, question: str, thread_id: str):
                 continue
 
             if msg_type == "AIMessage":
+                tracker.track_from_metadata(msg)
                 tool_calls = getattr(msg, "tool_calls", None)
                 if tool_calls:
                     for tc in tool_calls:
@@ -262,7 +271,9 @@ def stream_agent_events(agent, question: str, thread_id: str):
                         {"type": "thinking", "content": content},
                     )
 
-    yield _sse_event("done", {"status": "complete"})
+    summary = tracker.summary()
+    logger.info("[tokens] Request complete — %s", summary)
+    yield _sse_event("done", {"status": "complete", **summary})
 
 
 def _sse_event(event: str, data: dict) -> str:
