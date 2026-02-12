@@ -182,7 +182,12 @@ def stream_agent_events(agent, question: str, thread_id: str):
         done   - stream complete signal
     """
     config = {"configurable": {"thread_id": thread_id}}
-    prev_count = 0
+
+    # Get the number of messages already in the checkpoint so we skip them.
+    # Without this, stream_mode="values" re-emits the full history on the
+    # first step, causing previous answers to appear before the new one.
+    existing_state = agent.get_state(config)
+    prev_count = len(existing_state.values.get("messages", [])) if existing_state.values else 0
 
     for step in agent.stream(
         {"messages": [{"role": "user", "content": question}]},
