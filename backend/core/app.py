@@ -25,7 +25,8 @@ def build_app(settings: Settings | None = None):
     settings = settings or Settings()
 
     # Core components
-    db = get_database(settings.db_url, settings.db_path)
+    # db = get_database(settings.db_url, settings.db_path)
+    db = get_database(settings.db_url)
     model = init_chat_model(settings.model_name)
     memory = create_memory()
 
@@ -40,7 +41,9 @@ def build_app(settings: Settings | None = None):
     agents = {
         "sql": create_sql_agent(model, db, top_k=settings.top_k, checkpointer=memory),
         "rag": create_rag_agent(model, vectorstore, checkpointer=memory),
-        "hybrid": create_hybrid_agent(model, db, vectorstore, top_k=settings.top_k, checkpointer=memory),
+        "hybrid": create_hybrid_agent(
+            model, db, vectorstore, top_k=settings.top_k, checkpointer=memory
+        ),
     }
 
     # Ensure uploads directory exists
