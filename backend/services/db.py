@@ -12,6 +12,12 @@ def ensure_database_file(url: str, path: Path) -> Path:
     return path
 
 
-def get_database(url: str, path: Path) -> SQLDatabase:
-    resolved = ensure_database_file(url, Path(path).resolve())
-    return SQLDatabase.from_uri(f"sqlite:///{resolved.as_posix()}")
+# -----For SQLlite database------
+# def get_database(url: str, path: Path) -> SQLDatabase:
+#     resolved = ensure_database_file(url, Path(path).resolve())
+#     return SQLDatabase.from_uri(f"sqlite:///{resolved.as_posix()}")
+
+
+def get_database(connection_string: str, **kwargs) -> SQLDatabase:
+    """Connect to database using the provided SQLAlchemy connection string."""
+    return SQLDatabase.from_uri(connection_string)

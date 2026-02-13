@@ -25,6 +25,7 @@ frontend/.env.local
 *.db
 thread_store.json
 document_store.json
+*.BAK
 
 # Node
 node_modules/

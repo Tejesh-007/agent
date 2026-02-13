@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass, field
-from pathlib import Path
+# from pathlib import Path
 
 
 def _cors_origins() -> tuple[str, ...]:
@@ -15,19 +15,24 @@ class Settings:
         default_factory=lambda: os.getenv("MODEL_NAME", "google_genai:gemini-2.5-flash")
     )
 
-    # SQL Database
+    # SQLlite Database
+    # db_url: str = field(
+    #     default_factory=lambda: os.getenv(
+    #         "DATABASE_URL",
+    #         "https://storage.googleapis.com/benchmarks-artifacts/chinook/Chinook.db",
+    #     )
+    # )
+    # db_path: Path = field(
+    #     default_factory=lambda: Path(os.getenv("DATABASE_PATH", "Chinook.db"))
+    # )
+
+    # SQL Server Database
     db_url: str = field(
         default_factory=lambda: os.getenv(
             "DATABASE_URL",
-            "https://storage.googleapis.com/benchmarks-artifacts/chinook/Chinook.db",
         )
     )
-    db_path: Path = field(
-        default_factory=lambda: Path(os.getenv("DATABASE_PATH", "Chinook.db"))
-    )
-    top_k: int = field(
-        default_factory=lambda: int(os.getenv("TOP_K", "5"))
-    )
+    top_k: int = field(default_factory=lambda: int(os.getenv("TOP_K", "5")))
 
     # CORS
     cors_origins: tuple[str, ...] = field(default_factory=_cors_origins)
@@ -51,13 +56,11 @@ class Settings:
 
     # Embeddings
     embedding_model: str = field(
-        default_factory=lambda: os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
+        default_factory=lambda: os.getenv(
+            "EMBEDDING_MODEL", "models/gemini-embedding-001"
+        )
     )
 
     # Server
-    host: str = field(
-        default_factory=lambda: os.getenv("HOST", "0.0.0.0")
-    )
-    port: int = field(
-        default_factory=lambda: int(os.getenv("PORT", "8000"))
-    )
+    host: str = field(default_factory=lambda: os.getenv("HOST", "0.0.0.0"))
+    port: int = field(default_factory=lambda: int(os.getenv("PORT", "8000")))
