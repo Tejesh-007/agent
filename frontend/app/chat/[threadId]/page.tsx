@@ -6,6 +6,12 @@ import { MessageList } from "@/components/chat/MessageList";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useChatStream } from "@/hooks/use-chat-stream";
 import { useThreadStore } from "@/lib/stores/thread-store";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function ChatPage() {
   const params = useParams();
@@ -33,7 +39,7 @@ export default function ChatPage() {
               content: m.content,
               sqlQuery: m.sql_query,
               sqlResult: m.sql_result,
-            }))
+            })),
           );
         }
       }
@@ -46,18 +52,30 @@ export default function ChatPage() {
     await sendMessage(threadId, question, mode);
     // Auto-title from first message
     if (currentThread?.title === "New Chat") {
-      const title =
-        question.slice(0, 50) + (question.length > 50 ? "..." : "");
+      const title = question.slice(0, 50) + (question.length > 50 ? "..." : "");
       updateThread(threadId, title);
     }
   }
 
+  const title = currentThread?.title || "Chat";
+
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b px-6 py-3 flex items-center">
-        <h2 className="font-semibold text-lg">
-          {currentThread?.title || "Chat"}
-        </h2>
+      <div className="border-b pl-15 pr-0 py-3 flex items-center min-w-0">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <h2 className="font-semibold text-lg truncate min-w-0 flex-1">
+                {title}
+              </h2>
+            </TooltipTrigger>
+            {title.length > 50 && (
+              <TooltipContent>
+                <p className="max-w-md">{title}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <MessageList messages={messages} isStreaming={isStreaming} />
       <ChatInput onSend={handleSend} isStreaming={isStreaming} />

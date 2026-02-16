@@ -18,13 +18,12 @@ export default function HomePage() {
     <div className="flex flex-1 items-center justify-center">
       <div className="max-w-md text-center space-y-6">
         <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-          <Database className="w-8 h-8 text-primary" />
+          <Sparkles className="w-8 h-8 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">SQL Agent</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Agent</h1>
           <p className="text-muted-foreground mt-2">
-            Ask questions about your database in natural language. The AI agent
-            will write and execute SQL queries for you.
+            Ask questions about your database/documents in natural language.
           </p>
         </div>
         <div className="flex flex-col gap-3 items-center">

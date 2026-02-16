@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SQL Agent",
-  description: "AI-powered SQL database assistant",
+  title: "Agent",
+  description: "AI-powered assistant",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

@@ -12,7 +12,9 @@ def _cors_origins() -> tuple[str, ...]:
 class Settings:
     # LLM
     model_name: str = field(
-        default_factory=lambda: os.getenv("MODEL_NAME", "google_genai:gemini-2.5-flash")
+        default_factory=lambda: os.getenv(
+            "MODEL_NAME",
+        )
     )
 
     # SQLlite Database
@@ -57,7 +59,7 @@ class Settings:
     # Embeddings
     embedding_model: str = field(
         default_factory=lambda: os.getenv(
-            "EMBEDDING_MODEL", "models/gemini-embedding-001"
+            "EMBEDDING_MODEL",
         )
     )
 
