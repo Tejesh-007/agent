@@ -39,7 +39,7 @@ load_dotenv(env_path)
 _settings = Settings()
 
 app = FastAPI(
-    title="SQL Agent API",
+    title="Agent API",
     description="AI-powered SQL database and document assistant",
     version="2.0.0",
     lifespan=lifespan,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { PanelLeftClose, PanelLeft, Database, Sun, Moon } from "lucide-react";
+import { PanelLeftClose, PanelLeft, Sparkles, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -28,14 +28,14 @@ export function Sidebar() {
       <div
         className={cn(
           "flex flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300 overflow-hidden",
-          sidebarOpen ? "w-72" : "w-0"
+          sidebarOpen ? "w-72" : "w-0",
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2 min-w-0">
-            <Database className="w-5 h-5 text-primary flex-shrink-0" />
-            <span className="font-semibold text-sm truncate">SQL Agent</span>
+            <Sparkles className="w-5 h-5 text-primary flex-shrink-0" />
+            <span className="font-semibold text-sm truncate">Agent</span>
           </div>
           <Button
             variant="ghost"
@@ -100,12 +100,12 @@ export function Sidebar() {
       {/* Toggle button when sidebar is collapsed */}
       {!sidebarOpen && (
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="fixed top-4 left-4 z-10 h-8 w-8"
+          className="fixed top-4 left-4 z-50 h-9 w-9 rounded-full bg-background/90 shadow-sm border-muted"
           onClick={toggleSidebar}
         >
-          <PanelLeft className="w-4 h-4" />
+          <PanelLeft className="w-4 h-4 text-muted-foreground" />
         </Button>
       )}
     </>
