@@ -22,7 +22,7 @@ async def chat_stream(request: ChatRequest, agents=Depends(get_agents)):
     agent = get_agent_for_mode(request.mode, agents)
 
     return StreamingResponse(
-        stream_agent_events(agent, request.question, request.thread_id),
+        stream_agent_events(agent, request.question, request.thread_id, request.mode),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

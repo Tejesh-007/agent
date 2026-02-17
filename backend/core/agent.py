@@ -15,6 +15,7 @@ logger = logging.getLogger("token_tracker")
 # SQL Agent (existing)
 # ---------------------------------------------------------------------------
 
+
 def create_sql_agent(model, db, top_k: int = 5, checkpointer=None):
     """Create a LangGraph SQL agent with optional thread memory."""
     toolkit = SQLDatabaseToolkit(db=db, llm=model)
@@ -32,6 +33,7 @@ def create_sql_agent(model, db, top_k: int = 5, checkpointer=None):
 # RAG Agent
 # ---------------------------------------------------------------------------
 
+
 def _build_retriever_tool(vectorstore):
     """Build a retriever tool that searches the ChromaDB vectorstore."""
 
@@ -43,7 +45,7 @@ def _build_retriever_tool(vectorstore):
         The tool returns text excerpts from documents that were uploaded
         to the system.
         """
-        retrieved_docs = vectorstore.similarity_search(query, k=4)
+        retrieved_docs = vectorstore.similarity_search(query, k=3)
         serialized = "\n\n".join(
             f"Source: {doc.metadata.get('filename', 'unknown')} "
             f"(page {doc.metadata.get('page', '?')}, "
@@ -122,6 +124,7 @@ def create_hybrid_agent(model, db, vectorstore, top_k: int = 5, checkpointer=Non
 # Agent router
 # ---------------------------------------------------------------------------
 
+
 def get_agent_for_mode(mode: str, agents: dict):
     """Return the appropriate agent for the given mode.
 
@@ -140,6 +143,7 @@ def get_agent_for_mode(mode: str, agents: dict):
 # ---------------------------------------------------------------------------
 # Shared utilities
 # ---------------------------------------------------------------------------
+
 
 def _extract_text(value) -> str:
     """Extract plain text from various LangChain message formats."""
@@ -177,13 +181,19 @@ def run_agent(agent, question: str, thread_id: str | None = None) -> str:
     return _extract_text(response)
 
 
-def stream_agent_events(agent, question: str, thread_id: str):
+def stream_agent_events(agent, question: str, thread_id: str, mode: str = "rag"):
     """Generator that yields SSE-formatted events from agent execution.
 
     Event types:
         step   - intermediate reasoning (thinking, sql_query, sql_result, source)
         answer - final agent response
         done   - stream complete signal
+    
+    Args:
+        agent: The agent to run
+        question: User's question
+        thread_id: Thread ID for conversation history
+        mode: Agent mode ("sql", "rag", "hybrid") - history is limited only for "rag"
     """
     tracker = TokenTracker()
     config = {
@@ -195,7 +205,21 @@ def stream_agent_events(agent, question: str, thread_id: str):
     # Without this, stream_mode="values" re-emits the full history on the
     # first step, causing previous answers to appear before the new one.
     existing_state = agent.get_state(config)
-    prev_count = len(existing_state.values.get("messages", [])) if existing_state.values else 0
+    
+    # Limit conversation history to last 5 messages ONLY for RAG agent (token optimization)
+    # SQL and hybrid agents need complete history for context
+    if mode == "rag" and existing_state.values and "messages" in existing_state.values:
+        messages = existing_state.values["messages"]
+        if len(messages) > 5:
+            # Keep only the last 5 messages
+            trimmed_messages = messages[-5:]
+            # Update the state with trimmed messages
+            agent.update_state(config, {"messages": trimmed_messages})
+            prev_count = len(trimmed_messages)
+        else:
+            prev_count = len(messages)
+    else:
+        prev_count = len(existing_state.values.get("messages", [])) if existing_state.values else 0
 
     for step in agent.stream(
         {"messages": [{"role": "user", "content": question}]},
