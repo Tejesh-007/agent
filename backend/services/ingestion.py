@@ -8,15 +8,19 @@ def _get_loader(file_path: str, file_type: str):
     """Return the appropriate LangChain document loader for the file type."""
     if file_type == "pdf":
         from langchain_community.document_loaders import PyPDFLoader
+
         return PyPDFLoader(file_path)
     elif file_type == "csv":
         from langchain_community.document_loaders import CSVLoader
+
         return CSVLoader(file_path)
     elif file_type == "txt":
         from langchain_community.document_loaders import TextLoader
+
         return TextLoader(file_path, encoding="utf-8")
     elif file_type == "docx":
         from langchain_community.document_loaders import Docx2txtLoader
+
         return Docx2txtLoader(file_path)
     else:
         raise ValueError(f"Unsupported file type: {file_type}")
@@ -47,7 +51,7 @@ def ingest_document(
 
     # 2. Split into chunks
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
+        chunk_size=700,
         chunk_overlap=200,
         separators=["\n\n", "\n", ". ", " "],
         add_start_index=True,
@@ -56,12 +60,14 @@ def ingest_document(
 
     # 3. Add metadata to each chunk
     for i, chunk in enumerate(chunks):
-        chunk.metadata.update({
-            "document_id": document_id,
-            "filename": filename,
-            "chunk_index": i,
-            "total_chunks": len(chunks),
-        })
+        chunk.metadata.update(
+            {
+                "document_id": document_id,
+                "filename": filename,
+                "chunk_index": i,
+                "total_chunks": len(chunks),
+            }
+        )
         # Preserve page number if present (from PDF loader)
         if "page" not in chunk.metadata:
             chunk.metadata["page"] = 0
