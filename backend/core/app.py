@@ -54,4 +54,5 @@ def build_app(settings: Settings | None = None):
         "db": db,
         "vectorstore": vectorstore,
         "settings": settings,
+        "model": model,
     }

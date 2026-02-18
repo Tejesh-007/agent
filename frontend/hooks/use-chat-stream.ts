@@ -8,7 +8,7 @@ export function useChatStream() {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const sendMessage = useCallback(
-    async (threadId: string, question: string, mode: string = "sql") => {
+    async (threadId: string, question: string, mode: string = "auto") => {
       setIsStreaming(true);
 
       // Add user message immediately
@@ -30,10 +30,17 @@ export function useChatStream() {
       setMessages((prev) => [...prev, userMessage, agentMessage]);
 
       try {
+        // Send mode as null if "auto" to trigger backend classification
+        const payload = {
+          thread_id: threadId,
+          question,
+          mode: mode === "auto" ? null : mode,
+        };
+        
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ thread_id: threadId, question, mode }),
+          body: JSON.stringify(payload),
         });
 
         if (!response.ok) {

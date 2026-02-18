@@ -181,7 +181,7 @@ def run_agent(agent, question: str, thread_id: str | None = None) -> str:
     return _extract_text(response)
 
 
-def stream_agent_events(agent, question: str, thread_id: str, mode: str = "rag"):
+def stream_agent_events(agent, question: str, thread_id: str, mode: str):
     """Generator that yields SSE-formatted events from agent execution.
 
     Event types:
