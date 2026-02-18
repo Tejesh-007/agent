@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, KeyboardEvent } from "react";
-import { Send, Database, FileText, Layers } from "lucide-react";
+import { Send, Database, FileText, Layers, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -11,14 +11,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type Mode = "sql" | "rag" | "hybrid";
+type Mode = "auto" | "sql" | "rag" | "hybrid";
 
 interface ChatInputProps {
-  onSend: (message: string, mode: Mode) => void;
+  onSend: (message: string, mode: Mode | undefined) => void;
   isStreaming: boolean;
 }
 
 const MODE_CONFIG: Record<Mode, { label: string; icon: React.ReactNode; description: string }> = {
+  auto: {
+    label: "Auto",
+    icon: <Sparkles className="w-3.5 h-3.5" />,
+    description: "AI picks best mode",
+  },
   sql: {
     label: "SQL",
     icon: <Database className="w-3.5 h-3.5" />,
@@ -38,13 +43,14 @@ const MODE_CONFIG: Record<Mode, { label: string; icon: React.ReactNode; descript
 
 export function ChatInput({ onSend, isStreaming }: ChatInputProps) {
   const [value, setValue] = useState("");
-  const [mode, setMode] = useState<Mode>("sql");
+  const [mode, setMode] = useState<Mode>("auto");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed || isStreaming) return;
-    onSend(trimmed, mode);
+    // Send undefined for "auto" mode to trigger backend classification
+    onSend(trimmed, mode === "auto" ? undefined : mode);
     setValue("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -113,11 +119,13 @@ export function ChatInput({ onSend, isStreaming }: ChatInputProps) {
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           placeholder={
-            mode === "sql"
-              ? "Ask about your database..."
-              : mode === "rag"
-                ? "Ask about your documents..."
-                : "Ask about your database or documents..."
+            mode === "auto"
+              ? "Ask anything - AI will route automatically..."
+              : mode === "sql"
+                ? "Ask about your database..."
+                : mode === "rag"
+                  ? "Ask about your documents..."
+                  : "Ask about your database or documents..."
           }
           className="min-h-[44px] max-h-[200px] resize-none"
           rows={1}

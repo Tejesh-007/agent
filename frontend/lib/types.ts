@@ -38,7 +38,7 @@ export interface ThreadDetail extends Thread {
 export interface ChatRequest {
   thread_id: string;
   question: string;
-  mode?: string;
+  mode?: string | null;
 }
 
 export interface Document {

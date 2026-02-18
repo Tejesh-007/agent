@@ -5,7 +5,7 @@ from typing import Literal
 class ChatRequest(BaseModel):
     thread_id: str
     question: str
-    mode: Literal["sql", "rag", "hybrid"] = "sql"
+    mode: Literal["sql", "rag", "hybrid"] | None = None
 
 
 class ThreadCreate(BaseModel):

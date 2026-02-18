@@ -25,6 +25,7 @@ async def lifespan(app: FastAPI):
     app.state.db = components["db"]
     app.state.vectorstore = components["vectorstore"]
     app.state.settings = components["settings"]
+    app.state.model = components["model"]
     app.state.thread_store = ThreadStore()
     app.state.document_store = DocumentStore()
     yield

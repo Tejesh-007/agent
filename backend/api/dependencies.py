@@ -29,3 +29,8 @@ def get_thread_store(request: Request):
 
 def get_document_store(request: Request):
     return request.app.state.document_store
+
+
+def get_model(request: Request):
+    """Return the LLM model for classification."""
+    return request.app.state.model
